@@ -1,23 +1,115 @@
 [
   {
-    "name": "OpenAI",
-    "url": "https://openai.com",
-    "type": "AI Platform",
-    "description": "Artificial intelligence research and deployment platform.",
-    "rating": "5/5"
+    "name": "Quince",
+    "url": "",
+    "type": "International",
+    "description": "Voted a top rooftop restaurant, it offers hip international cuisine with panoramic view of the Parroquia",
+    "rating": ""
   },
   {
-    "name": "GitHub",
-    "url": "https://github.com",
-    "type": "Development",
-    "description": "Code hosting and collaboration platform.",
-    "rating": "4.8/5"
+    "name": "Mama Mia",
+    "url": "",
+    "type": "Mexican",
+    "description": "Live entertainment up front & mid-section, nice fire pits in back and rooftop",
+    "rating": ""
   },
   {
-    "name": "Stack Overflow",
-    "url": "https://stackoverflow.com",
-    "type": "Community",
-    "description": "Developer Q&A knowledge sharing platform.",
-    "rating": "4.7/5"
+    "name": "La Siena Gorda",
+    "url": "",
+    "type": "Mexican",
+    "description": "Family restaurant with good food and drinks; beautiful courtyard seating; next time want to try the tableside mussels which looked & smelled great! (Note signage for the place is not obvious, you need to walk back into the courtyard area to the hostess stand and enter the restaurant)",
+    "rating": "5"
+  },
+  {
+    "name": "Los Milagros",
+    "url": "",
+    "type": "Mexican",
+    "description": "Must get one of the Mocajetes (for 2 people)",
+    "rating": ""
+  },
+  {
+    "name": "Tio Lucas",
+    "url": "",
+    "type": "Steak House",
+    "description": "Excellent steak house, a favorite",
+    "rating": ""
+  },
+  {
+    "name": "El Pegaso",
+    "url": "",
+    "type": "Mexican",
+    "description": "Traditional Mexican",
+    "rating": ""
+  },
+  {
+    "name": "Hcho en Mexico",
+    "url": "",
+    "type": "Mexican",
+    "description": "Traditional Mexican",
+    "rating": ""
+  },
+  {
+    "name": "Mare Nostrum",
+    "url": "",
+    "type": "Italian",
+    "description": "Excellent Italian seafood and pasta dishes",
+    "rating": ""
+  },
+  {
+    "name": "Orquidea Thai",
+    "url": "",
+    "type": "Thai",
+    "description": "Good Thai",
+    "rating": ""
+  },
+  {
+    "name": "Andy's Pastor Taco Cart",
+    "url": "",
+    "type": "Mexican",
+    "description": "On Avenida Insurgentes, just down the street from the Bibliotecha (library)",
+    "rating": ""
+  },
+  {
+    "name": "Lolita's",
+    "url": "",
+    "type": "Mexican",
+    "description": "Great Mexican food and super-friendly staff (but no English); try out the tableside Guac with pork rinds! This is Uyen and my go-to place on our first nights in SMA after the long flight.",
+    "rating": ""
+  },
+  {
+    "name": "Hamburguesas las Aguacatosas",
+    "url": "",
+    "type": "Burgers",
+    "description": "Cheap burgers and awesome french fries; burgers can be a bit messy to eat with the avocado sliding around, but very tasty and inexpensive",
+    "rating": "5"
+  },
+  {
+    "name": "Brasimix Tacos",
+    "url": "",
+    "type": "Mexican",
+    "description": "Cheap tacos, quesadillas, tostadas, and other Mexican treats; staff does not speak English, but ordering is easy.",
+    "rating": "5"
+  },
+  {
+    "name": "Asia Orient Express",
+    "url": "",
+    "type": "Asian",
+    "description": "May be the best Asian restaurant in SMA, but food is just so-so; rice and dishes tend to be a little sweeter than what you would expect for Asian food",
+    "rating": "2"
+  },
+  {
+    "name": "Tostevere",
+    "url": "1",
+    "type": "Tapas",
+    "description": "Great small shareable dishes and unique cocktails; favorite place we typically visit at least once during our trips",
+    "rating": "5"
+  },
+  {
+    "name": "(Italian Place)",
+    "url": "",
+    "type": "Italian",
+    "description": "Decent Italian food and drinks; some dishes are better than others",
+    "rating": "3"
   }
 ]
+

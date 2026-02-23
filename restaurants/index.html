@@ -3,95 +3,35 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Resource Table</title>
-  <style>
-    body { font-family: Arial, sans-serif; margin: 0; background: #f5f5f5; }
-    header img { width: 100%; height: 250px; object-fit: cover; }
-
-    .container { padding: 20px; max-width: 1100px; margin: 0 auto; }
-    .controls {
-      display: grid;
-      grid-template-columns: 1fr 220px 220px 140px;
-      gap: 10px;
-      align-items: end;
-      margin: 14px 0 16px;
-    }
-    .control { display: flex; flex-direction: column; gap: 6px; }
-    label { font-size: 12px; color: #444; }
-    input, select {
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      background: white;
-      font-size: 14px;
-    }
-    .btn {
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      background: #fff;
-      cursor: pointer;
-      font-size: 14px;
-    }
-    .btn:hover { background: #f2f2f2; }
-
-    table { width: 100%; border-collapse: collapse; background: white; }
-    th, td { padding: 12px; border: 1px solid #ddd; text-align: left; vertical-align: top; }
-    th { background: #333; color: white; user-select: none; }
-    tr:nth-child(even) { background: #fafafa; }
-
-    a { color: #0077cc; text-decoration: none; }
-    a:hover { text-decoration: underline; }
-
-    .stars { display: inline-flex; gap: 2px; vertical-align: middle; }
-    .star {
-      width: 16px; height: 16px; display: inline-block;
-      background: #ddd;
-      clip-path: polygon(
-        50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%,
-        50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%
-      );
-      position: relative;
-    }
-    .star .fill {
-      position: absolute; inset: 0;
-      background: #f5b301; /* gold */
-      width: 0%;
-    }
-    .rating-text { margin-left: 8px; color: #555; font-size: 12px; }
-
-    .meta { display: flex; justify-content: space-between; align-items: center; margin: 6px 0 10px; color:#444; }
-    .pill { background:#fff; border:1px solid #ddd; padding:6px 10px; border-radius:999px; font-size:12px; }
-
-    @media (max-width: 900px) {
-      .controls { grid-template-columns: 1fr 1fr; }
-    }
-  </style>
+  <title>San Miguel de Allende - Restaurant Recommendations</title>
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
 
 <header>
-  <img src="image.jpg" alt="Header Image">
+  <img src="image.jpg" alt="San Miguel de Allende">
 </header>
 
 <div class="container">
-  <h2>Resource List</h2>
+
+  <h2>San Miguel de Allende</h2>
+  <h1>Restaurant Recommendations</h1>
 
   <div class="controls">
     <div class="control">
-      <label for="search">Search</label>
-      <input id="search" type="text" placeholder="Search name, type, or description..." />
+      <label>Search</label>
+      <input id="search" type="text" placeholder="Search..." />
     </div>
 
     <div class="control">
-      <label for="typeFilter">Filter by Type</label>
+      <label>Filter by Type</label>
       <select id="typeFilter">
         <option value="">All types</option>
       </select>
     </div>
 
     <div class="control">
-      <label for="sortBy">Sort by</label>
+      <label>Sort by</label>
       <select id="sortBy">
         <option value="name">Name</option>
         <option value="type">Type</option>
@@ -101,7 +41,7 @@
 
     <div class="control">
       <label>&nbsp;</label>
-      <button class="btn" id="sortDirBtn" title="Toggle sort direction">Ascending ▲</button>
+      <button class="btn" id="sortDirBtn">Ascending ▲</button>
     </div>
   </div>
 
@@ -121,41 +61,10 @@
     </thead>
     <tbody></tbody>
   </table>
+
 </div>
 
 <script>
-  // ---- Helpers ----
-  function toNumberRating(r) {
-    // Accepts: 4.7, "4.7", "4.7/5", "5/5"
-    if (typeof r === "number") return r;
-    if (!r) return 0;
-    const s = String(r).trim();
-    const m = s.match(/(\d+(\.\d+)?)/);
-    return m ? parseFloat(m[1]) : 0;
-  }
-
-  function escapeHtml(str) {
-    return String(str ?? "")
-      .replaceAll("&", "&amp;")
-      .replaceAll("<", "&lt;")
-      .replaceAll(">", "&gt;")
-      .replaceAll('"', "&quot;")
-      .replaceAll("'", "&#039;");
-  }
-
-  function starsHtml(ratingOutOf5) {
-    const r = Math.max(0, Math.min(5, ratingOutOf5));
-    let html = `<span class="stars" aria-label="Rating ${r.toFixed(1)} out of 5">`;
-    for (let i = 1; i <= 5; i++) {
-      const portion = Math.max(0, Math.min(1, r - (i - 1))); // 0..1
-      const pct = (portion * 100).toFixed(0);
-      html += `<span class="star" role="img" aria-hidden="true"><span class="fill" style="width:${pct}%"></span></span>`;
-    }
-    html += `</span><span class="rating-text">${r.toFixed(1)}/5</span>`;
-    return html;
-  }
-
-  // ---- State ----
   let allItems = [];
   let sortAsc = true;
 
@@ -169,83 +78,71 @@
     countPill: document.getElementById("countPill"),
   };
 
-  function buildTypeOptions(items) {
-    const types = Array.from(new Set(items.map(x => (x.type || "").trim()).filter(Boolean))).sort((a,b)=>a.localeCompare(b));
-    // Reset options (keep first)
-    els.typeFilter.innerHTML = `<option value="">All types</option>`;
-    for (const t of types) {
-      const opt = document.createElement("option");
-      opt.value = t;
-      opt.textContent = t;
-      els.typeFilter.appendChild(opt);
-    }
+  function toNumberRating(r) {
+    if (!r) return null;
+    const match = String(r).match(/(\d+(\.\d+)?)/);
+    return match ? parseFloat(match[1]) : null;
   }
 
-  function applySearchFilterSort(items) {
-    const q = els.search.value.trim().toLowerCase();
-    const type = els.typeFilter.value;
-
-    let out = items;
-
-    // Filter by type
-    if (type) {
-      out = out.filter(x => (x.type || "").trim() === type);
+  function starsHtml(rating) {
+    if (rating === null) {
+      return `<span class="no-rating">No rating</span>`;
     }
 
-    // Search across fields
-    if (q) {
-      out = out.filter(x => {
-        const hay = `${x.name || ""} ${x.type || ""} ${x.description || ""}`.toLowerCase();
-        return hay.includes(q);
-      });
+    let html = `<span class="stars">`;
+    for (let i = 1; i <= 5; i++) {
+      const portion = Math.max(0, Math.min(1, rating - (i - 1)));
+      const pct = (portion * 100).toFixed(0);
+      html += `<span class="star"><span class="fill" style="width:${pct}%"></span></span>`;
     }
-
-    // Sort
-    const key = els.sortBy.value;
-    out = [...out].sort((a, b) => {
-      if (key === "rating") {
-        const ra = toNumberRating(a.rating);
-        const rb = toNumberRating(b.rating);
-        return sortAsc ? (ra - rb) : (rb - ra);
-      } else {
-        const sa = String(a[key] ?? "").toLowerCase();
-        const sb = String(b[key] ?? "").toLowerCase();
-        return sortAsc ? sa.localeCompare(sb) : sb.localeCompare(sa);
-      }
-    });
-
-    return out;
-  }
-
-  function renderTable(items) {
-    els.tbody.innerHTML = "";
-
-    for (const item of items) {
-      const tr = document.createElement("tr");
-      const name = escapeHtml(item.name);
-      const url = escapeHtml(item.url);
-      const type = escapeHtml(item.type);
-      const desc = escapeHtml(item.description);
-      const ratingNum = toNumberRating(item.rating);
-
-      tr.innerHTML = `
-        <td><a href="${url}" target="_blank" rel="noopener noreferrer">${name}</a></td>
-        <td>${type}</td>
-        <td>${desc}</td>
-        <td>${starsHtml(ratingNum)}</td>
-      `;
-      els.tbody.appendChild(tr);
-    }
-
-    els.countPill.textContent = `${items.length} item${items.length === 1 ? "" : "s"}`;
+    html += `</span><span class="rating-text">${rating.toFixed(1)}/5</span>`;
+    return html;
   }
 
   function refresh() {
-    const view = applySearchFilterSort(allItems);
-    renderTable(view);
+    let items = [...allItems];
+    const search = els.search.value.toLowerCase();
+    const type = els.typeFilter.value;
+
+    if (type) items = items.filter(i => i.type === type);
+
+    if (search) {
+      items = items.filter(i =>
+        `${i.name} ${i.type} ${i.description}`.toLowerCase().includes(search)
+      );
+    }
+
+    const sortBy = els.sortBy.value;
+
+    items.sort((a, b) => {
+      if (sortBy === "rating") {
+        const ra = toNumberRating(a.rating);
+        const rb = toNumberRating(b.rating);
+        return sortAsc ? (ra ?? -1) - (rb ?? -1) : (rb ?? -1) - (ra ?? -1);
+      } else {
+        return sortAsc
+          ? a[sortBy].localeCompare(b[sortBy])
+          : b[sortBy].localeCompare(a[sortBy]);
+      }
+    });
+
+    els.tbody.innerHTML = "";
+
+    items.forEach(item => {
+      const ratingNum = toNumberRating(item.rating);
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td><a href="${item.url}" target="_blank">${item.name}</a></td>
+        <td>${item.type}</td>
+        <td>${item.description}</td>
+        <td>${starsHtml(ratingNum)}</td>
+      `;
+      els.tbody.appendChild(row);
+    });
+
+    els.countPill.textContent = `${items.length} items`;
   }
 
-  // ---- Events ----
   els.search.addEventListener("input", refresh);
   els.typeFilter.addEventListener("change", refresh);
   els.sortBy.addEventListener("change", refresh);
@@ -265,24 +162,18 @@
     refresh();
   });
 
-  // ---- Load data ----
   fetch("data.json")
     .then(r => r.json())
     .then(data => {
-      // Normalize a bit
-      allItems = (Array.isArray(data) ? data : []).map(x => ({
-        name: x.name ?? "",
-        url: x.url ?? "#",
-        type: x.type ?? "",
-        description: x.description ?? "",
-        rating: x.rating ?? 0
-      }));
-      buildTypeOptions(allItems);
+      allItems = data;
+      const types = [...new Set(data.map(d => d.type))].sort();
+      types.forEach(t => {
+        const option = document.createElement("option");
+        option.value = t;
+        option.textContent = t;
+        els.typeFilter.appendChild(option);
+      });
       refresh();
-    })
-    .catch(err => {
-      console.error("Error loading data.json:", err);
-      els.tbody.innerHTML = `<tr><td colspan="4">Could not load data.json. Run via a local web server (see below).</td></tr>`;
     });
 </script>
 
