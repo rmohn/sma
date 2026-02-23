@@ -1,0 +1,23 @@
+[
+  {
+    "name": "OpenAI",
+    "url": "https://openai.com",
+    "type": "AI Platform",
+    "description": "Artificial intelligence research and deployment platform.",
+    "rating": "5/5"
+  },
+  {
+    "name": "GitHub",
+    "url": "https://github.com",
+    "type": "Development",
+    "description": "Code hosting and collaboration platform.",
+    "rating": "4.8/5"
+  },
+  {
+    "name": "Stack Overflow",
+    "url": "https://stackoverflow.com",
+    "type": "Community",
+    "description": "Developer Q&A knowledge sharing platform.",
+    "rating": "4.7/5"
+  }
+]

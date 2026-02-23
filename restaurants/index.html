@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Resource Table</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; background: #f5f5f5; }
+    header img { width: 100%; height: 250px; object-fit: cover; }
+
+    .container { padding: 20px; max-width: 1100px; margin: 0 auto; }
+    .controls {
+      display: grid;
+      grid-template-columns: 1fr 220px 220px 140px;
+      gap: 10px;
+      align-items: end;
+      margin: 14px 0 16px;
+    }
+    .control { display: flex; flex-direction: column; gap: 6px; }
+    label { font-size: 12px; color: #444; }
+    input, select {
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      background: white;
+      font-size: 14px;
+    }
+    .btn {
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      background: #fff;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    .btn:hover { background: #f2f2f2; }
+
+    table { width: 100%; border-collapse: collapse; background: white; }
+    th, td { padding: 12px; border: 1px solid #ddd; text-align: left; vertical-align: top; }
+    th { background: #333; color: white; user-select: none; }
+    tr:nth-child(even) { background: #fafafa; }
+
+    a { color: #0077cc; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    .stars { display: inline-flex; gap: 2px; vertical-align: middle; }
+    .star {
+      width: 16px; height: 16px; display: inline-block;
+      background: #ddd;
+      clip-path: polygon(
+        50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%,
+        50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%
+      );
+      position: relative;
+    }
+    .star .fill {
+      position: absolute; inset: 0;
+      background: #f5b301; /* gold */
+      width: 0%;
+    }
+    .rating-text { margin-left: 8px; color: #555; font-size: 12px; }
+
+    .meta { display: flex; justify-content: space-between; align-items: center; margin: 6px 0 10px; color:#444; }
+    .pill { background:#fff; border:1px solid #ddd; padding:6px 10px; border-radius:999px; font-size:12px; }
+
+    @media (max-width: 900px) {
+      .controls { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <img src="image.jpg" alt="Header Image">
+</header>
+
+<div class="container">
+  <h2>Resource List</h2>
+
+  <div class="controls">
+    <div class="control">
+      <label for="search">Search</label>
+      <input id="search" type="text" placeholder="Search name, type, or description..." />
+    </div>
+
+    <div class="control">
+      <label for="typeFilter">Filter by Type</label>
+      <select id="typeFilter">
+        <option value="">All types</option>
+      </select>
+    </div>
+
+    <div class="control">
+      <label for="sortBy">Sort by</label>
+      <select id="sortBy">
+        <option value="name">Name</option>
+        <option value="type">Type</option>
+        <option value="rating">Rating</option>
+      </select>
+    </div>
+
+    <div class="control">
+      <label>&nbsp;</label>
+      <button class="btn" id="sortDirBtn" title="Toggle sort direction">Ascending ▲</button>
+    </div>
+  </div>
+
+  <div class="meta">
+    <div class="pill" id="countPill">0 items</div>
+    <button class="btn" id="resetBtn">Reset</button>
+  </div>
+
+  <table id="data-table">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Rating</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</div>
+
+<script>
+  // ---- Helpers ----
+  function toNumberRating(r) {
+    // Accepts: 4.7, "4.7", "4.7/5", "5/5"
+    if (typeof r === "number") return r;
+    if (!r) return 0;
+    const s = String(r).trim();
+    const m = s.match(/(\d+(\.\d+)?)/);
+    return m ? parseFloat(m[1]) : 0;
+  }
+
+  function escapeHtml(str) {
+    return String(str ?? "")
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+  }
+
+  function starsHtml(ratingOutOf5) {
+    const r = Math.max(0, Math.min(5, ratingOutOf5));
+    let html = `<span class="stars" aria-label="Rating ${r.toFixed(1)} out of 5">`;
+    for (let i = 1; i <= 5; i++) {
+      const portion = Math.max(0, Math.min(1, r - (i - 1))); // 0..1
+      const pct = (portion * 100).toFixed(0);
+      html += `<span class="star" role="img" aria-hidden="true"><span class="fill" style="width:${pct}%"></span></span>`;
+    }
+    html += `</span><span class="rating-text">${r.toFixed(1)}/5</span>`;
+    return html;
+  }
+
+  // ---- State ----
+  let allItems = [];
+  let sortAsc = true;
+
+  const els = {
+    tbody: document.querySelector("#data-table tbody"),
+    search: document.getElementById("search"),
+    typeFilter: document.getElementById("typeFilter"),
+    sortBy: document.getElementById("sortBy"),
+    sortDirBtn: document.getElementById("sortDirBtn"),
+    resetBtn: document.getElementById("resetBtn"),
+    countPill: document.getElementById("countPill"),
+  };
+
+  function buildTypeOptions(items) {
+    const types = Array.from(new Set(items.map(x => (x.type || "").trim()).filter(Boolean))).sort((a,b)=>a.localeCompare(b));
+    // Reset options (keep first)
+    els.typeFilter.innerHTML = `<option value="">All types</option>`;
+    for (const t of types) {
+      const opt = document.createElement("option");
+      opt.value = t;
+      opt.textContent = t;
+      els.typeFilter.appendChild(opt);
+    }
+  }
+
+  function applySearchFilterSort(items) {
+    const q = els.search.value.trim().toLowerCase();
+    const type = els.typeFilter.value;
+
+    let out = items;
+
+    // Filter by type
+    if (type) {
+      out = out.filter(x => (x.type || "").trim() === type);
+    }
+
+    // Search across fields
+    if (q) {
+      out = out.filter(x => {
+        const hay = `${x.name || ""} ${x.type || ""} ${x.description || ""}`.toLowerCase();
+        return hay.includes(q);
+      });
+    }
+
+    // Sort
+    const key = els.sortBy.value;
+    out = [...out].sort((a, b) => {
+      if (key === "rating") {
+        const ra = toNumberRating(a.rating);
+        const rb = toNumberRating(b.rating);
+        return sortAsc ? (ra - rb) : (rb - ra);
+      } else {
+        const sa = String(a[key] ?? "").toLowerCase();
+        const sb = String(b[key] ?? "").toLowerCase();
+        return sortAsc ? sa.localeCompare(sb) : sb.localeCompare(sa);
+      }
+    });
+
+    return out;
+  }
+
+  function renderTable(items) {
+    els.tbody.innerHTML = "";
+
+    for (const item of items) {
+      const tr = document.createElement("tr");
+      const name = escapeHtml(item.name);
+      const url = escapeHtml(item.url);
+      const type = escapeHtml(item.type);
+      const desc = escapeHtml(item.description);
+      const ratingNum = toNumberRating(item.rating);
+
+      tr.innerHTML = `
+        <td><a href="${url}" target="_blank" rel="noopener noreferrer">${name}</a></td>
+        <td>${type}</td>
+        <td>${desc}</td>
+        <td>${starsHtml(ratingNum)}</td>
+      `;
+      els.tbody.appendChild(tr);
+    }
+
+    els.countPill.textContent = `${items.length} item${items.length === 1 ? "" : "s"}`;
+  }
+
+  function refresh() {
+    const view = applySearchFilterSort(allItems);
+    renderTable(view);
+  }
+
+  // ---- Events ----
+  els.search.addEventListener("input", refresh);
+  els.typeFilter.addEventListener("change", refresh);
+  els.sortBy.addEventListener("change", refresh);
+
+  els.sortDirBtn.addEventListener("click", () => {
+    sortAsc = !sortAsc;
+    els.sortDirBtn.textContent = sortAsc ? "Ascending ▲" : "Descending ▼";
+    refresh();
+  });
+
+  els.resetBtn.addEventListener("click", () => {
+    els.search.value = "";
+    els.typeFilter.value = "";
+    els.sortBy.value = "name";
+    sortAsc = true;
+    els.sortDirBtn.textContent = "Ascending ▲";
+    refresh();
+  });
+
+  // ---- Load data ----
+  fetch("data.json")
+    .then(r => r.json())
+    .then(data => {
+      // Normalize a bit
+      allItems = (Array.isArray(data) ? data : []).map(x => ({
+        name: x.name ?? "",
+        url: x.url ?? "#",
+        type: x.type ?? "",
+        description: x.description ?? "",
+        rating: x.rating ?? 0
+      }));
+      buildTypeOptions(allItems);
+      refresh();
+    })
+    .catch(err => {
+      console.error("Error loading data.json:", err);
+      els.tbody.innerHTML = `<tr><td colspan="4">Could not load data.json. Run via a local web server (see below).</td></tr>`;
+    });
+</script>
+
+</body>
+</html>
