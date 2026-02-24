@@ -1,107 +1,122 @@
 [
   {
     "name": "Quince",
-    "url": "",
+    "url": "https://www.quincesma.com/sma/",
     "type": "International",
     "description": "Voted a top rooftop restaurant, it offers hip international cuisine with panoramic view of the Parroquia",
+    "address": "Cuna de Allende 15, Zona Centro, Centro, 37700 San Miguel de Allende, Gto., Mexico",
     "rating": ""
   },
   {
     "name": "Mama Mia",
-    "url": "",
+    "url": "https://mamamia.com.mx/",
     "type": "Mexican",
     "description": "Live entertainment up front & mid-section, nice fire pits in back and rooftop",
+    "address": "Calle del Dr. Ignacio Hernández Macías 91, Zona Centro, 37700 San Miguel de Allende, Gto., Mexico",
     "rating": ""
   },
   {
     "name": "La Siena Gorda",
-    "url": "",
+    "url": "https://resy.com/cities/san-miguel-de-allende-mexico/venues/restaurante-la-sirena-gorda-sma",
     "type": "Mexican",
     "description": "Family restaurant with good food and drinks; beautiful courtyard seating; next time want to try the tableside mussels which looked & smelled great! (Note signage for the place is not obvious, you need to walk back into the courtyard area to the hostess stand and enter the restaurant)",
+    "address": "Umarán 8 Interior 3, Zona Centro, 37700 San Miguel de Allende, Gto., Mexico",
     "rating": "5"
   },
   {
     "name": "Los Milagros",
-    "url": "",
+    "url": "https://restaurantlosmilagros.com/",
     "type": "Mexican",
     "description": "Must get one of the Mocajetes (for 2 people)",
+    "address": "Relox 17, Centro, 37700 San Miguel de Allende, Gto., Mexico",
     "rating": ""
   },
   {
     "name": "Tio Lucas",
-    "url": "",
+    "url": "https://tiolucassma.com/",
     "type": "Steak House",
-    "description": "Excellent steak house, a favorite",
-    "rating": ""
+    "description": "Excellent steak house, a favorite. Food was good and the live entertainment was phenominal - defintely worth going after 6:30-7:00 to listen!",
+    "address": "Mesones 103, Zona Centro, 37700 San Miguel de Allende, Gto., Mexico",
+    "rating": "4"
   },
   {
     "name": "El Pegaso",
-    "url": "",
+    "url": "https://www.facebook.com/elpegasosma/",
     "type": "Mexican",
     "description": "Traditional Mexican",
+    "address": "Corregidora 6, Zona Centro, 37700 San Miguel de Allende, Gto., Mexico",
     "rating": ""
   },
   {
     "name": "Hcho en Mexico",
-    "url": "",
+    "url": "https://hechoenmexicosma.com/",
     "type": "Mexican",
     "description": "Traditional Mexican",
+    "address": "Ancha de San Antonio 8, Zona Centro, 37700 San Miguel de Allende, Gto., Mexico",
     "rating": ""
   },
   {
     "name": "Mare Nostrum",
-    "url": "",
+    "url": "https://www.sanmiguelrestaurants.com/restaurants/italian/mare-nostrum/",
     "type": "Italian",
     "description": "Excellent Italian seafood and pasta dishes",
+    "address": "Umarán 56, Zona Centro, 37700 San Miguel de Allende, Gto., Mexico",
     "rating": ""
   },
   {
     "name": "Orquidea Thai",
-    "url": "",
+    "url": "https://resy.com/cities/san-miguel-de-allende-mexico/venues/restaurante-orquidea-thai-sma",
     "type": "Thai",
     "description": "Good Thai",
+    "address": "Zacateros 83, Zona Centro, 37700 San Miguel de Allende, Gto., Mexico",
     "rating": ""
   },
   {
     "name": "Andy's Pastor Taco Cart",
-    "url": "",
+    "url": "https://www.facebook.com/2071382689557379",
     "type": "Mexican",
     "description": "On Avenida Insurgentes, just down the street from the Bibliotecha (library)",
+    "address": "Avenida Insurgentes 85, Zona Centro, San Miguel de Allende, Gto., Mexico",
     "rating": ""
   },
   {
     "name": "Lolita's",
-    "url": "",
+    "url": "https://restaurantelolita.com/",
     "type": "Mexican",
     "description": "Great Mexican food and super-friendly staff (but no English); try out the tableside Guac with pork rinds! This is Uyen and my go-to place on our first nights in SMA after the long flight.",
+    "address": "Salida a Celaya 52, Zona Centro, 37760 San Miguel de Allende, Gto., Mexico",
     "rating": ""
   },
   {
     "name": "Hamburguesas las Aguacatosas",
-    "url": "",
+    "url": "https://www.facebook.com/LasAguacatosas/",
     "type": "Burgers",
     "description": "Cheap burgers and awesome french fries; burgers can be a bit messy to eat with the avocado sliding around, but very tasty and inexpensive",
+    "address": "Salida a Celaya 94, San Miguel de Allende, Gto., Mexico",
     "rating": "5"
   },
   {
     "name": "Brasimix Tacos",
-    "url": "",
+    "url": "https://www.tripadvisor.com.mx/Restaurant_Review-g151932-d32817261-Reviews-Brasimix-San_Miguel_de_Allende_Central_Mexico_and_Gulf_Coast.html",
     "type": "Mexican",
     "description": "Cheap tacos, quesadillas, tostadas, and other Mexican treats; staff does not speak English, but ordering is easy.",
+    "address": "Salida a Celaya 20A, Zona Centro, 37754 San Miguel de Allende, Gto., Mexico",
     "rating": "5"
   },
   {
     "name": "Asia Orient Express",
-    "url": "",
+    "url": "https://www.asiaorient.express/",
     "type": "Asian",
     "description": "May be the best Asian restaurant in SMA, but food is just so-so; rice and dishes tend to be a little sweeter than what you would expect for Asian food",
+    "address": "Salida a Celaya 6 Interior 5, Zona Centro, San Miguel de Allende, Gto., Mexico",
     "rating": "2"
   },
   {
     "name": "Tostevere",
-    "url": "1",
+    "url": "https://restaurante.covermanager.com/tostevere/",
     "type": "Tapas",
     "description": "Great small shareable dishes and unique cocktails; favorite place we typically visit at least once during our trips",
+    "address": "Codo 4, Col. Centro, 37700 San Miguel de Allende, Gto., Mexico",
     "rating": "5"
   },
   {
@@ -109,7 +124,15 @@
     "url": "",
     "type": "Italian",
     "description": "Decent Italian food and drinks; some dishes are better than others",
+    "address": "",
+    "rating": "3"
+  },
+  {
+    "name": "Marulier",
+    "url": "https://www.tripadvisor.com/Restaurant_Review-g151932-d14035827-Reviews-Marulier-San_Miguel_de_Allende_Central_Mexico_and_Gulf_Coast.html",
+    "type": "Breakfast",
+    "description": "Great breakfast from French pastries to hotcakes, french toast, sandwiches, fruit plates, and more.  Right next to the Organic market (which is open on Friday and Saturday)",
+    "address": "Ancha de San Antonio 121, San Antonio, 37750 San Miguel de Allende, Gto.",
     "rating": "3"
   }
 ]
-

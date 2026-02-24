@@ -7,175 +7,297 @@
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
+  <header class="hero">
+    <img src="image.jpg" alt="San Miguel de Allende" />
+  </header>
 
-<header>
-  <img src="image.jpg" alt="San Miguel de Allende">
-</header>
+  <main class="container">
+    <h1>San Miguel de Allende</h1>
+    <h2>Restaurant Recommendations</h2>
 
-<div class="container">
+    <section class="controls" aria-label="Table controls">
+      <div class="control">
+        <label for="search">Search</label>
+        <input id="search" type="text" placeholder="Search name, type, or description..." />
+      </div>
 
-  <h2>San Miguel de Allende</h2>
-  <h1>Restaurant Recommendations</h1>
+      <div class="control">
+        <label for="typeFilter">Filter by Type</label>
+        <select id="typeFilter">
+          <option value="">All types</option>
+        </select>
+      </div>
 
-  <div class="controls">
-    <div class="control">
-      <label>Search</label>
-      <input id="search" type="text" placeholder="Search..." />
+      <div class="control">
+        <label for="sortBy">Sort by</label>
+        <select id="sortBy">
+          <option value="name">Name</option>
+          <option value="type">Type</option>
+          <option value="rating">Rating</option>
+        </select>
+      </div>
+
+      <div class="control">
+        <label>&nbsp;</label>
+        <button class="btn" id="sortDirBtn" type="button" title="Toggle sort direction">
+          Ascending ▲
+        </button>
+      </div>
+    </section>
+
+    <div class="meta">
+      <div class="pill" id="countPill">0 items</div>
+      <button class="btn" id="resetBtn" type="button">Reset</button>
     </div>
 
-    <div class="control">
-      <label>Filter by Type</label>
-      <select id="typeFilter">
-        <option value="">All types</option>
-      </select>
-    </div>
+    <section class="table-wrap">
+      <table id="data-table">
+        <thead>
+          <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Type</th>
+            <th scope="col">Description</th>
+            <th scope="col">Rating</th>
+            <th scope="col">Map</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody">
+          <tr>
+            <td colspan="5" class="loading">Loading…</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+  </main>
 
-    <div class="control">
-      <label>Sort by</label>
-      <select id="sortBy">
-        <option value="name">Name</option>
-        <option value="type">Type</option>
-        <option value="rating">Rating</option>
-      </select>
-    </div>
+  <script>
+    // ---------- DOM ----------
+    const els = {
+      body: document.getElementById("tableBody"),
+      search: document.getElementById("search"),
+      typeFilter: document.getElementById("typeFilter"),
+      sortBy: document.getElementById("sortBy"),
+      sortDirBtn: document.getElementById("sortDirBtn"),
+      resetBtn: document.getElementById("resetBtn"),
+      countPill: document.getElementById("countPill"),
+    };
 
-    <div class="control">
-      <label>&nbsp;</label>
-      <button class="btn" id="sortDirBtn">Ascending ▲</button>
-    </div>
-  </div>
+    // ---------- State ----------
+    let allItems = [];
+    let sortAsc = true;
 
-  <div class="meta">
-    <div class="pill" id="countPill">0 items</div>
-    <button class="btn" id="resetBtn">Reset</button>
-  </div>
-
-  <table id="data-table">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Type</th>
-        <th>Description</th>
-        <th>Rating</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
-
-</div>
-
-<script>
-  let allItems = [];
-  let sortAsc = true;
-
-  const els = {
-    tbody: document.querySelector("#data-table tbody"),
-    search: document.getElementById("search"),
-    typeFilter: document.getElementById("typeFilter"),
-    sortBy: document.getElementById("sortBy"),
-    sortDirBtn: document.getElementById("sortDirBtn"),
-    resetBtn: document.getElementById("resetBtn"),
-    countPill: document.getElementById("countPill"),
-  };
-
-  function toNumberRating(r) {
-    if (!r) return null;
-    const match = String(r).match(/(\d+(\.\d+)?)/);
-    return match ? parseFloat(match[1]) : null;
-  }
-
-  function starsHtml(rating) {
-    if (rating === null) {
-      return `<span class="no-rating">No rating</span>`;
+    // ---------- Helpers ----------
+    function isIOS() {
+      // iPhone/iPad/iPod detection (good enough for this use case)
+      return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
     }
 
-    let html = `<span class="stars">`;
-    for (let i = 1; i <= 5; i++) {
-      const portion = Math.max(0, Math.min(1, rating - (i - 1)));
-      const pct = (portion * 100).toFixed(0);
-      html += `<span class="star"><span class="fill" style="width:${pct}%"></span></span>`;
-    }
-    html += `</span><span class="rating-text">${rating.toFixed(1)}/5</span>`;
-    return html;
-  }
-
-  function refresh() {
-    let items = [...allItems];
-    const search = els.search.value.toLowerCase();
-    const type = els.typeFilter.value;
-
-    if (type) items = items.filter(i => i.type === type);
-
-    if (search) {
-      items = items.filter(i =>
-        `${i.name} ${i.type} ${i.description}`.toLowerCase().includes(search)
-      );
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
     }
 
-    const sortBy = els.sortBy.value;
+    function toNumberRating(r) {
+      // Accept numbers or strings like "4.7/5". Blank => null
+      if (r === null || r === undefined) return null;
+      const s = String(r).trim();
+      if (!s) return null;
+      const m = s.match(/(\d+(\.\d+)?)/);
+      return m ? parseFloat(m[1]) : null;
+    }
 
-    items.sort((a, b) => {
-      if (sortBy === "rating") {
-        const ra = toNumberRating(a.rating);
-        const rb = toNumberRating(b.rating);
-        return sortAsc ? (ra ?? -1) - (rb ?? -1) : (rb ?? -1) - (ra ?? -1);
-      } else {
-        return sortAsc
-          ? a[sortBy].localeCompare(b[sortBy])
-          : b[sortBy].localeCompare(a[sortBy]);
+    function starsHtml(ratingOutOf5) {
+      if (ratingOutOf5 === null) {
+        return `<span class="no-rating">No rating</span>`;
       }
-    });
 
-    els.tbody.innerHTML = "";
+      const r = Math.max(0, Math.min(5, ratingOutOf5));
+      let html = `<span class="stars" aria-label="Rating ${r.toFixed(1)} out of 5">`;
+      for (let i = 1; i <= 5; i++) {
+        const portion = Math.max(0, Math.min(1, r - (i - 1))); // 0..1
+        const pct = Math.round(portion * 100);
+        html += `
+          <span class="star" aria-hidden="true">
+            <span class="fill" style="width:${pct}%"></span>
+          </span>`;
+      }
+      html += `</span><span class="rating-text">${r.toFixed(1)}/5</span>`;
+      return html;
+    }
 
-    items.forEach(item => {
-      const ratingNum = toNumberRating(item.rating);
-      const row = document.createElement("tr");
-      row.innerHTML = `
-        <td><a href="${item.url}" target="_blank">${item.name}</a></td>
-        <td>${item.type}</td>
-        <td>${item.description}</td>
-        <td>${starsHtml(ratingNum)}</td>
+    function mapIconLink(address) {
+      const addr = String(address ?? "").trim();
+      if (!addr) return `<span class="no-address">—</span>`;
+
+      const q = encodeURIComponent(addr);
+      const url = isIOS()
+        ? `maps://?q=${q}` // Apple Maps app on iOS
+        : `https://www.google.com/maps/search/?api=1&query=${q}`; // Google Maps elsewhere
+
+      return `
+        <a class="map-link" href="${url}" target="_blank" rel="noopener noreferrer"
+           title="View on map" aria-label="View on map">
+          <svg class="map-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M12 22s7-4.5 7-11a7 7 0 1 0-14 0c0 6.5 7 11 7 11zm0-9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z"></path>
+          </svg>
+        </a>
       `;
-      els.tbody.appendChild(row);
-    });
+    }
 
-    els.countPill.textContent = `${items.length} items`;
-  }
+    function normalizeData(raw) {
+      return (Array.isArray(raw) ? raw : []).map(x => ({
+        name: String(x?.name ?? "").trim(),
+        url: String(x?.url ?? "#").trim(),
+        type: String(x?.type ?? "").trim(),
+        description: String(x?.description ?? "").trim(),
+        rating: x?.rating ?? null,
+        address: String(x?.address ?? "").trim(),
+      }));
+    }
 
-  els.search.addEventListener("input", refresh);
-  els.typeFilter.addEventListener("change", refresh);
-  els.sortBy.addEventListener("change", refresh);
+    function buildTypeOptions(items) {
+      const types = Array.from(
+        new Set(items.map(i => i.type).filter(Boolean))
+      ).sort((a, b) => a.localeCompare(b));
 
-  els.sortDirBtn.addEventListener("click", () => {
-    sortAsc = !sortAsc;
-    els.sortDirBtn.textContent = sortAsc ? "Ascending ▲" : "Descending ▼";
-    refresh();
-  });
+      // reset list
+      els.typeFilter.innerHTML = `<option value="">All types</option>`;
+      for (const t of types) {
+        const opt = document.createElement("option");
+        opt.value = t;
+        opt.textContent = t;
+        els.typeFilter.appendChild(opt);
+      }
+    }
 
-  els.resetBtn.addEventListener("click", () => {
-    els.search.value = "";
-    els.typeFilter.value = "";
-    els.sortBy.value = "name";
-    sortAsc = true;
-    els.sortDirBtn.textContent = "Ascending ▲";
-    refresh();
-  });
+    function applySearchFilterSort(items) {
+      const q = els.search.value.trim().toLowerCase();
+      const type = els.typeFilter.value;
 
-  fetch("data.json")
-    .then(r => r.json())
-    .then(data => {
-      allItems = data;
-      const types = [...new Set(data.map(d => d.type))].sort();
-      types.forEach(t => {
-        const option = document.createElement("option");
-        option.value = t;
-        option.textContent = t;
-        els.typeFilter.appendChild(option);
+      let out = items;
+
+      if (type) {
+        out = out.filter(i => i.type === type);
+      }
+
+      if (q) {
+        out = out.filter(i => {
+          const hay = `${i.name} ${i.type} ${i.description}`.toLowerCase();
+          return hay.includes(q);
+        });
+      }
+
+      const key = els.sortBy.value;
+
+      out = [...out].sort((a, b) => {
+        if (key === "rating") {
+          const ra = toNumberRating(a.rating);
+          const rb = toNumberRating(b.rating);
+
+          // Keep unrated items at bottom regardless of direction
+          const aMissing = ra === null;
+          const bMissing = rb === null;
+          if (aMissing && !bMissing) return 1;
+          if (!aMissing && bMissing) return -1;
+          if (aMissing && bMissing) return a.name.localeCompare(b.name);
+
+          return sortAsc ? (ra - rb) : (rb - ra);
+        }
+
+        const sa = String(a[key] ?? "").toLowerCase();
+        const sb = String(b[key] ?? "").toLowerCase();
+        return sortAsc ? sa.localeCompare(sb) : sb.localeCompare(sa);
       });
+
+      return out;
+    }
+
+    function render(items) {
+      els.body.innerHTML = "";
+
+      if (!items.length) {
+        els.body.innerHTML = `<tr><td colspan="5" class="empty">No matches.</td></tr>`;
+        els.countPill.textContent = "0 items";
+        return;
+      }
+
+      const frag = document.createDocumentFragment();
+
+      for (const item of items) {
+        const tr = document.createElement("tr");
+
+        const name = escapeHtml(item.name);
+        const url = escapeHtml(item.url);
+        const type = escapeHtml(item.type);
+        const desc = escapeHtml(item.description);
+
+        const ratingNum = toNumberRating(item.rating);
+
+        tr.innerHTML = `
+          <td>
+            <a href="${url}" target="_blank" rel="noopener noreferrer">${name || "—"}</a>
+          </td>
+          <td>${type || "—"}</td>
+          <td>${desc || "—"}</td>
+          <td>${starsHtml(ratingNum)}</td>
+          <td>${mapIconLink(item.address)}</td>
+        `;
+
+        frag.appendChild(tr);
+      }
+
+      els.body.appendChild(frag);
+      els.countPill.textContent = `${items.length} item${items.length === 1 ? "" : "s"}`;
+    }
+
+    function refresh() {
+      render(applySearchFilterSort(allItems));
+    }
+
+    // ---------- Events ----------
+    els.search.addEventListener("input", refresh);
+    els.typeFilter.addEventListener("change", refresh);
+    els.sortBy.addEventListener("change", refresh);
+
+    els.sortDirBtn.addEventListener("click", () => {
+      sortAsc = !sortAsc;
+      els.sortDirBtn.textContent = sortAsc ? "Ascending ▲" : "Descending ▼";
       refresh();
     });
-</script>
 
+    els.resetBtn.addEventListener("click", () => {
+      els.search.value = "";
+      els.typeFilter.value = "";
+      els.sortBy.value = "name";
+      sortAsc = true;
+      els.sortDirBtn.textContent = "Ascending ▲";
+      refresh();
+    });
+
+    // ---------- Load ----------
+    fetch("data.json", { cache: "no-store" })
+      .then(r => {
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        return r.json();
+      })
+      .then(raw => {
+        allItems = normalizeData(raw);
+        buildTypeOptions(allItems);
+        refresh();
+      })
+      .catch(err => {
+        console.error("Failed to load data.json:", err);
+        els.body.innerHTML = `
+          <tr>
+            <td colspan="5" class="error">
+              Could not load <code>data.json</code>. Make sure you're running a local web server.
+            </td>
+          </tr>`;
+      });
+  </script>
 </body>
 </html>
